@@ -4,9 +4,11 @@ var http = require("http");
 var url = require("url");
 var net = require("net");
 
-var connected;
-var clearToSend;
-var queue;
+var conn;
+var connected = false;
+var clearToSend = false;
+var queue = [];
+
 var powered = false;
 var muted = false;
 var volume = 0;
@@ -27,8 +29,6 @@ function sendResponse(request, response, httpcode, contenttype, body) {
 }
 
 function recv(data) {
-  clearToSend = true;
-
   var datalen = data.byteLength;
   if (datalen < 20) {
     console.log("received short packet");
@@ -70,10 +70,41 @@ function recv(data) {
 }
 
 function trySend() {
-  if (connected && clearToSend && (queue.length > 0)) {
+  if (connected && clearToSend && queue.length > 0) {
     clearToSend = false;
+
     var cmd = queue.shift();
-    // TODO
+    var cmdlen = 2 + cmd.byteLength + 1;
+    var data = new Array(16 + cmdlen);
+
+    data[0] = 'I';
+    data[1] = 'S';
+    data[2] = 'C';
+    data[3] = 'P';
+    data[4] = 0;
+    data[5] = 0;
+    data[6] = 0;
+    data[7] = 16;
+
+    for (var i = 11; i >= 8; i--) {
+      data[i] = cmdlen % 256;
+      cmdlen = cmdlen >> 8;
+    }
+
+    data[12] = 1;
+    data[13] = 0;
+    data[14] = 0;
+    data[15] = 0;
+    data[16] = '!';
+    data[17] = '1';
+
+    for (var i = cmd.byteLength - 1; i >= 0; i--) {
+      data[18 + i] = cmd[i];
+    }
+
+    data[data.length - 1] = '\r';
+
+    conn.write(data);
   }
 }
 
@@ -82,21 +113,26 @@ function send(data) {
   trySend();
 }
 
-var conn = net.createConnection(60128, "onkyo");
-conn.on("connect", function() {
-  connected = true;
-  clearToSend = true;
-  queue = [];
-  send("PWRQSTN");
-});
-conn.on("end", function() {
-  connected = false;
-});
-conn.on("data", function(data) {
-  recv(data);
-  clearToSend = true;
-  trySend();
-});
+function connect() {
+  conn = net.createConnection(60128, "onkyo");
+  conn.on("connect", function() {
+    connected = true;
+    clearToSend = true;
+    queue = [ "PWRQSTN", "MVLQSTN", "AMTQSTN", "SLIQSTN" ];
+    trySend();
+  });
+  conn.on("end", function() {
+    connected = false;
+    conn.destroy();
+  });
+  conn.on("data", function(data) {
+    recv(data);
+    clearToSend = true;
+    trySend();
+  });
+};
+
+connect();
 
 var server = http.createServer(function(request, response) {
   request.on("error", function(err) {
