@@ -74,13 +74,13 @@ function trySend() {
     clearToSend = false;
 
     var cmd = queue.shift();
-    var cmdlen = 2 + cmd.byteLength + 1;
-    var data = new Array(16 + cmdlen);
+    var cmdlen = 2 + cmd.length + 1;
+    var data = new Buffer(16 + cmdlen);
 
-    data[0] = 'I';
-    data[1] = 'S';
-    data[2] = 'C';
-    data[3] = 'P';
+    data[0] = 'I'.charCodeAt(0);
+    data[1] = 'S'.charCodeAt(0);
+    data[2] = 'C'.charCodeAt(0);
+    data[3] = 'P'.charCodeAt(0);
     data[4] = 0;
     data[5] = 0;
     data[6] = 0;
@@ -95,16 +95,17 @@ function trySend() {
     data[13] = 0;
     data[14] = 0;
     data[15] = 0;
-    data[16] = '!';
-    data[17] = '1';
+    data[16] = '!'.charCodeAt(0);
+    data[17] = '1'.charCodeAt(0);
 
-    for (var i = cmd.byteLength - 1; i >= 0; i--) {
-      data[18 + i] = cmd[i];
+    for (var i = cmd.length - 1; i >= 0; i--) {
+      data[18 + i] = cmd.charCodeAt(i);
     }
 
-    data[data.length - 1] = '\r';
+    data[data.length - 1] = '\r'.charCodeAt(0);
 
     conn.write(data);
+    console.log(data.toString());
   }
 }
 
@@ -115,6 +116,8 @@ function send(data) {
 
 function connect() {
   conn = net.createConnection(60128, "onkyo");
+  conn.setKeepAlive(true);
+  conn.setNoDelay(true);
   conn.on("connect", function() {
     connected = true;
     clearToSend = true;
