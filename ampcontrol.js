@@ -12,6 +12,20 @@ var queue = [];
 var powered = false;
 var muted = false;
 var volume = 0;
+var input = "";
+var inputs = {
+  "10": "DVD",
+  "00": "VCR/DVR",
+  "01": "CBL/SAT",
+  "02": "GAME/TV",
+  "03": "AUX1",
+  "04": "AUX2",
+  "20": "TAPE",
+  "24": "TUNER",
+  "23": "CD",
+  "22": "PHONO",
+  "28": "NET/USB"
+};
 
 function sendResponse(request, response, httpcode, contenttype, body) {
   process.nextTick(function() {
@@ -64,9 +78,13 @@ function recv(data) {
   } else if (cmd3 == "MVL") {
     volume = parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
+    var inp = cmd.substr(3);
+    input = (inp in inputs ? inputs[inp] : "unknown input (" + inp + ")");
+  } else {
+    console.log("unknown cmd=%s", cmd);
   }
 
-  console.log("powered=%s muted=%s volume=%d", powered.toString(), muted.toString(), volume);
+  console.log("powered=%s muted=%s volume=%d input=%s", powered.toString(), muted.toString(), volume, input);
 }
 
 function trySend() {
@@ -105,7 +123,7 @@ function trySend() {
     data[data.length - 1] = '\r'.charCodeAt(0);
 
     conn.write(data);
-    console.log(data.toString());
+    console.log("send %d bytes, cmd=%s", data.length, cmd);
   }
 }
 
@@ -154,7 +172,16 @@ var server = http.createServer(function(request, response) {
   } else if (path.pathname == "/") {
     sendResponse(request, response, 200, "text/plain", "hello, world");
   } else if (path.pathname == "/getstatus") {
-
+  } else if (path.pathname == "/set") {
+    if ("power" in path.query) {
+      send("PWR0" + (path.query["power"] == "on" ? "1" : "0"));
+    }
+    if ("mute" in path.query) {
+    }
+    if ("volume" in path.query) {
+    }
+    if ("input" in path.query) {
+    }
   } else if (path.pathname == "/favicon.ico") {
     sendResponse(request, response, 404, "image/x-icon", "");
   } else {
