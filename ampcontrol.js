@@ -173,15 +173,31 @@ var server = http.createServer(function(request, response) {
     sendResponse(request, response, 200, "text/plain", "hello, world");
   } else if (path.pathname == "/getstatus") {
   } else if (path.pathname == "/set") {
-    if ("power" in path.query) {
-      send("PWR0" + (path.query["power"] == "on" ? "1" : "0"));
-    }
-    if ("mute" in path.query) {
-    }
-    if ("volume" in path.query) {
-    }
-    if ("input" in path.query) {
-    }
+    Object.keys(path.query).forEach(function(param) {
+      if (param == "power") {
+        if (path.query["power"] == "on") {
+          send("PWR01");
+        } else if (path.query["power"] == "off") {
+          send("PWR00");
+        } else {
+          sendResponse(request, response, 400, "text/plain", "unknown power setting: " + path.query["power"]);
+        }
+      } else if (param == "mute") {
+        if (path.query["mute"] == "on") {
+          send("AMT01");
+        } else if (path.query["mute"] == "off") {
+          send("AMT00");
+        } else {
+          sendResponse(request, response, 400, "text/plain", "unknown mute setting: " + path.query["mute"]);
+        }
+      } else if (param == "volume") {
+
+      } else if (param == "input") {
+
+      } else {
+        sendResponse(request, response, 400, "text/plain", "unknown setting: " + param);
+      }
+    });
   } else if (path.pathname == "/favicon.ico") {
     sendResponse(request, response, 404, "image/x-icon", "");
   } else {
