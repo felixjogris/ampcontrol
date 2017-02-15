@@ -172,26 +172,41 @@ var server = http.createServer(function(request, response) {
   } else if (path.pathname == "/") {
     sendResponse(request, response, 200, "text/plain", "hello, world");
   } else if (path.pathname == "/getstatus") {
+    sendResponse(request, response, 200, "application/json", JSON.stringify({
+      "connected" : connected,
+      "powered"   : powered,
+      "muted"     : muted,
+      "volume"    : volume,
+      "input"     : input
+    }));
   } else if (path.pathname == "/set") {
     Object.keys(path.query).forEach(function(param) {
       if (param == "power") {
-        if (path.query["power"] == "on") {
+        var pwr = path.query["power"];
+        if (pwr == "on") {
           send("PWR01");
-        } else if (path.query["power"] == "off") {
+        } else if (pwr == "off") {
           send("PWR00");
         } else {
-          sendResponse(request, response, 400, "text/plain", "unknown power setting: " + path.query["power"]);
+          sendResponse(request, response, 400, "text/plain", "invalid power setting: " + pwr);
         }
       } else if (param == "mute") {
-        if (path.query["mute"] == "on") {
+        var mte = path.query["mute"];
+        if (mte == "on") {
           send("AMT01");
-        } else if (path.query["mute"] == "off") {
+        } else if (mte == "off") {
           send("AMT00");
         } else {
-          sendResponse(request, response, 400, "text/plain", "unknown mute setting: " + path.query["mute"]);
+          sendResponse(request, response, 400, "text/plain", "invalid mute setting: " + mte);
         }
       } else if (param == "volume") {
-
+        var vol = path.query["volume"];
+        var newVolume = parseInt(vol);
+        if (isNaN(newVolume)) {
+          sendResponse(request, response, 400, "text/plain", "invalid volume setting: " + vol);
+        } else {
+          send("MVL" + newVolume);
+        }
       } else if (param == "input") {
 
       } else {
