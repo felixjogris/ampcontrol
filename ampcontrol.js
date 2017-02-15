@@ -78,8 +78,7 @@ function recv(data) {
   } else if (cmd3 == "MVL") {
     volume = parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
-    var inp = cmd.substr(3);
-    input = (inp in inputs ? inputs[inp] : "unknown input (" + inp + ")");
+    input = cmd.substr(3);
   } else {
     console.log("unknown cmd=%s", cmd);
   }
@@ -153,6 +152,51 @@ function connect() {
   });
 };
 
+function evalQuery(query) {
+  if (Object.keys(query).length != 1) {
+    return "exactly one setting expected";
+  }
+
+  if ("power" in query) {
+    var pwr = query["power"];
+    if (pwr == "on") {
+      send("PWR01");
+    } else if (pwr == "off") {
+      send("PWR00");
+    } else {
+      return "invalid power setting: " + pwr;
+    }
+  } else if ("mute" in query) {
+    var mte = query["mute"];
+    if (mte == "on") {
+      send("AMT01");
+    } else if (mte == "off") {
+      send("AMT00");
+    } else {
+      return "invalid mute setting: " + mte;
+    }
+  } else if ("volume" in query) {
+    var vol = query["volume"];
+    var newVolume = parseInt(vol);
+    if (isNaN(newVolume)) {
+      return "invalid volume setting: " + vol;
+    } else {
+      send("MVL" + newVolume);
+    }
+  } else if ("input" in query) {
+    var newInput = query["input"];
+    if (newInput in inputs) {
+      send("SLI" + newInput);
+    } else {
+      return "invalid input setting: " + newInput;
+    }
+  } else {
+    return "unknown setting";
+  }
+
+  return "";
+}
+
 connect();
 
 var server = http.createServer(function(request, response) {
@@ -179,40 +223,11 @@ var server = http.createServer(function(request, response) {
       "volume"    : volume,
       "input"     : input
     }));
+  } else if (path.pathname == "/getinputs") {
+    sendResponse(request, response, 200, "application/json", JSON.stringify(inputs));
   } else if (path.pathname == "/set") {
-    Object.keys(path.query).forEach(function(param) {
-      if (param == "power") {
-        var pwr = path.query["power"];
-        if (pwr == "on") {
-          send("PWR01");
-        } else if (pwr == "off") {
-          send("PWR00");
-        } else {
-          sendResponse(request, response, 400, "text/plain", "invalid power setting: " + pwr);
-        }
-      } else if (param == "mute") {
-        var mte = path.query["mute"];
-        if (mte == "on") {
-          send("AMT01");
-        } else if (mte == "off") {
-          send("AMT00");
-        } else {
-          sendResponse(request, response, 400, "text/plain", "invalid mute setting: " + mte);
-        }
-      } else if (param == "volume") {
-        var vol = path.query["volume"];
-        var newVolume = parseInt(vol);
-        if (isNaN(newVolume)) {
-          sendResponse(request, response, 400, "text/plain", "invalid volume setting: " + vol);
-        } else {
-          send("MVL" + newVolume);
-        }
-      } else if (param == "input") {
-
-      } else {
-        sendResponse(request, response, 400, "text/plain", "unknown setting: " + param);
-      }
-    });
+    var error = evalQuery(path.query);
+    sendResponse(request, response, (error ? 400 : 200), "text/plain", (error ? error : "ok"));
   } else if (path.pathname == "/favicon.ico") {
     sendResponse(request, response, 404, "image/x-icon", "");
   } else {
