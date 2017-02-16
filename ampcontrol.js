@@ -181,7 +181,7 @@ function evalQuery(query) {
     if (isNaN(newVolume)) {
       return "invalid volume setting: " + vol;
     } else {
-      send("MVL" + newVolume.toString(16).toUpperCase());
+      send("MVL" + (newVolume < 10 ? "0" : "") + newVolume.toString(16).toUpperCase());
     }
   } else if ("input" in query) {
     var newInput = query["input"];
@@ -214,7 +214,7 @@ var server = http.createServer(function(request, response) {
   if (request.method != "GET") {
     sendResponse(request, response, 400, "text/plain", "http method not supported");
   } else if (path.pathname == "/") {
-    sendResponse(request, response, 200, "text/plain", "hello, world");
+    sendResponse(request, response, 200, "text/html", index_html);
   } else if (path.pathname == "/getstatus") {
     sendResponse(request, response, 200, "application/json", JSON.stringify({
       "connected" : connected,
@@ -235,3 +235,112 @@ var server = http.createServer(function(request, response) {
   }
 });
 server.listen(8082);
+
+var index_html = function(){/*
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>ampcontrol</title>
+<style type="text/css">
+body {
+  font-family:sans-serif;
+  padding:0;
+  margin:0;
+  background-color:black;
+}
+#errorPane {
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  left:0;
+  opacity:0.5;
+  background-color:#ccc;
+  visibility:hidden;
+  padding:0;
+  margin:0;
+  z-index:998;
+}
+#errorText {
+  width:100%;
+  position:absolute;
+  top:50%;
+  left:0;
+  text-align:center;
+  vertical-align:middle;
+  opacity:1;
+  background-color:red;
+  visibility:hidden;
+  color:white;
+  font-weight:bold;
+  font-size:large;
+  padding:0.1em 0em 0.1em 0em;
+  margin:0;
+  z-index:999;
+}
+#heartbeat {
+  position:fixed;
+  bottom:0;
+  right:0;
+  font-weight:bold;
+  margin:0;
+  color:red;
+}
+</style>
+</head>
+<body>
+
+<div id="errorPane"></div>
+<div id="errorText">Connection lost!</div>
+<div id="heartbeat">&hearts;</div>
+
+<script type="text/javascript">
+<!--
+function processData (response) {
+  try {
+    var data = JSON.parse(response);
+  } catch (e) {
+    toggleErrorPane("visible");
+  }
+}
+
+function toggleErrorPane (visibility) {
+  var errorPane = document.getElementById("errorPane");
+
+  if (errorPane.style.visibility != visibility) {
+    errorPane.style.visibility = visibility;
+    document.getElementById("errorText").style.visibility = visibility;
+  }
+}
+
+function toggleHeartBeat () {
+  var heartbeat = document.getElementById("heartbeat");
+  heartbeat.style.visibility = (heartbeat.style.visibility == "hidden" ? "visible" : "hidden");
+}
+
+function startRequest () {
+  toggleHeartBeat();
+
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.timeout = 10000;
+  xmlHttp.onreadystatechange = function () {
+    if (xmlHttp.readyState == 4) {
+      if (xmlHttp.status == 200) {
+        toggleErrorPane("hidden");
+        processData(xmlHttp.response);
+      } else {
+        toggleErrorPane("visible");
+      }
+      window.setTimeout(startRequest, 1000);
+    }
+  };
+  xmlHttp.open("GET", "/getstatus");
+  xmlHttp.send();
+}
+
+startRequest();
+-->
+</script>
+</body>
+</html>
+*/}.toString().slice(15, -4);
