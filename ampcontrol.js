@@ -181,7 +181,7 @@ function evalQuery(query) {
     if (isNaN(newVolume)) {
       return "invalid volume setting: " + vol;
     } else {
-      send("MVL" + newVolume);
+      send("MVL" + newVolume.toString(16).toUpperCase());
     }
   } else if ("input" in query) {
     var newInput = query["input"];
