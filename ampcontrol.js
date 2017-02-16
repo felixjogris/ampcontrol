@@ -181,7 +181,11 @@ function evalQuery(query) {
     if (isNaN(newVolume)) {
       return "invalid volume setting: " + vol;
     } else {
-      send("MVL" + (newVolume < 10 ? "0" : "") + newVolume.toString(16).toUpperCase());
+      var hexVol = newVolume.toString(16).toUpperCase();
+      if (hexVol.length < 2) {
+        hexVol = "0" + hexVol;
+      }
+      send("MVL" + hexVol);
     }
   } else if ("input" in query) {
     var newInput = query["input"];
