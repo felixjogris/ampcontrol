@@ -258,7 +258,7 @@ body {
   position:absolute;
   top:0;
   left:0;
-  opacity:0.5;
+  opacity:0.1;
   background-color:#ccc;
   visibility:hidden;
   padding:0;
@@ -294,12 +294,39 @@ body {
 </head>
 <body>
 
+<div id="ampcontrol">
+<select id="inputs"></select>
+<input id="volume" type="range" min="0" max="255">
+<input id="muted" type="checkbox">
+<input id="power" type="button">
+</div>
+
 <div id="errorPane"></div>
 <div id="errorText">Connection lost!</div>
 <div id="heartbeat">&hearts;</div>
 
 <script type="text/javascript">
 <!--
+function getInputs () {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.timeout = 10000;
+  xmlHttp.onreadystatechange = function () {
+    if ((xmlHttp.readyState == 4) && (xmlHttp.status == 200)) {
+      try {
+        var inputs = JSON.parse(xmlHttp.response);
+        Object.keys(inputs).forEach(function (input) {
+          if (document.getElementById("inputs")) {
+            document.getElementById("inputs").add(new Option(inputs[input], input));
+          }
+        });
+      } catch (e) {
+      }
+    }
+  };
+  xmlHttp.open("GET", "/getinputs");
+  xmlHttp.send()
+}
+
 function processData (response) {
   try {
     var data = JSON.parse(response);
@@ -342,6 +369,7 @@ function startRequest () {
   xmlHttp.send();
 }
 
+getInputs();
 startRequest();
 -->
 </script>
