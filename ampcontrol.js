@@ -307,6 +307,7 @@ input, select, option {
 #ampcontrol {
   width:300px;
   height:800px;
+  margin:0 auto 0 auto;
 }
 .row, #mute, #power, #inputs, #volume, #led, #about {
   width:100%;
