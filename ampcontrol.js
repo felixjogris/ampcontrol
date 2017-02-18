@@ -246,7 +246,7 @@ var server = http.createServer(function(request, response) {
     }
     sendResponse(request, response, 200, "text/plain", "ok");
   } else if (path.pathname.endsWith("/favicon.ico")) {
-    sendResponse(request, response, 404, "image/x-icon", "");
+    sendResponse(request, response, 200, "image/x-icon", new Buffer("AAABAAEAICAAAAEAIAAiAwAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAgAAAAIAgGAAAAc3p69AAAAulJREFUWIW910+IVXUUB/DPPHQaa8yFJukyLcVQERxS2uQiM82Ichmaim5EEVwpGEQKbqRVlIuIilqKFVYIKURlVARq2ugYgYLjDCrkn7Q32bT4/S73vjfvzvvdp3Tgcn/3nu855/v7e86PzqX7HmzHyHPYhZ4S/YN4Ce/jJIYwijou4jj2og9dVYNPRH90eAFrC7rJeBM3oj7lOYs1VYj04m2MFJx8jR0YbhHgKk7hCL7BOdxugTuOWcnDgLn4oqRX57Ab80tsu4VpfFfjaF3BsioktCBxS1gfqYvuUbwjH9E6nk8Nvq0Q+A9cL3z3Y2XELcLH+GAcX8/iWrS9jifbBX+qwPozYUfMwAHcLRD5HJtie6SNzycwGLG/aTOKRyPwNB5u0i3GdwUS/yQSgKW4E/Fby0AvRMAd5Su3C+twqUDk3wQCsD3ih4WtPUa+jID9Cc4ewifykUiRiRiINhualb1Cz+uYluhwtfQpyGRjtPm0WfFKVByp4KwTAlMj/hYmZT9r8sPlcAVnnchV/CDkldnZzwmYGdsDHTp+vAJ2KL77hGlvIDDYQfAu4ZiuKu9ljZp8K1VOo/dDJsh7PhO/VLQfFU67VNmHl4Wt+G0zgdklRu2kytqZHt8/ZXY1IbfDqg4JpMpULMFf+L2o6BUKijoeSXR2LwfRoVbKw1H5VoKjGfhKtaO4G+ejzWutAKui8m/l+7oHOzVWPKnJaEfEDylJRoQ6cBRnMKVJt1qYtyxwRqJqOt4yHrBPWAdZ0dFjbJ14Fx/i1UQCc+QFyWkhK44rWwrBhjVWysewIOJSSrLl8pLsT8xrF5ywLbOpyJ5rWJ9iHCUr47KqqY4VKYbLcKIpePYM4HUsLLF9QKh8D+Bmwe4KnmkXeAoOalzZH2Gz/ArWPCK/yi8m57W+mHyPx1J6XsOP0ehnPF3QTcYbql3N+oUip1JyWyIUnLUS/SS8KKTRE7gsPzcuCIllj1A9/29Z9b5cz/8DRk4SPtNSmoYAAAAASUVORK5CYII=", "base64"));
   } else if (path.pathname.endsWith("/")) {
     sendResponse(request, response, 200, "text/html", index_html);
   } else {
