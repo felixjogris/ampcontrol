@@ -83,7 +83,7 @@ function recv(data) {
     console.log("unknown cmd=%s", cmd);
   }
 
-//  console.log("power=%s mute=%s volume=%d input=%s", power.toString(), mute.toString(), volume, input);
+  console.log("power=%s mute=%s volume=%d input=%s", power.toString(), mute.toString(), volume, input);
 }
 
 function trySend() {
@@ -122,7 +122,7 @@ function trySend() {
     data[data.length - 1] = '\r'.charCodeAt(0);
 
     conn.write(data);
-//    console.log("send %d bytes, cmd=%s", data.length, cmd);
+    console.log("send %d bytes, cmd=%s", data.length, cmd);
   }
 }
 
@@ -158,13 +158,13 @@ function evalQuery(query) {
   }
 
   if ("power" in query) {
-    if (query["power"]) {
+    if (query["power"] == "true") {
       send("PWR01");
     } else  {
       send("PWR00");
     }
   } else if ("mute" in query) {
-    if (query["mute"]) {
+    if (query["mute"] == "true") {
       send("AMT01");
     } else {
       send("AMT00");
@@ -228,7 +228,9 @@ var server = http.createServer(function(request, response) {
     var error = evalQuery(path.query);
     sendResponse(request, response, (error ? 400 : 200), "text/plain", (error ? error : "ok"));
   } else if (path.pathname == "/reconnect") {
-    connect();
+    if (!connected) {
+      connect();
+    }
     sendResponse(request, response, 200, "text/plain", "ok");
   } else if (path.pathname == "/favicon.ico") {
     sendResponse(request, response, 404, "image/x-icon", "");
