@@ -25,8 +25,9 @@ load_rc_config "$name"
 ampcontrol_start()
 {
 	check_startmsgs && echo "Starting ${name}."
-	/usr/sbin/daemon -f -p "${pidfile}" -t "${name}" -u "${ampcontrol_user}" \
-    "${command}" "${ampcontrol_host}" "${ampcontrol_port}"
+	/usr/sbin/daemon -f -p "${pidfile}" -t "${name}" \
+		-u "${ampcontrol_user}" "${command}" \
+		"${ampcontrol_host}" "${ampcontrol_port}"
 }
 
 run_rc_command "$1"
