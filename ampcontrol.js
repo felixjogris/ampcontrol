@@ -76,7 +76,7 @@ function recv(data) {
   } else if (cmd == "AMT01") {
     muted = true;
   } else if (cmd3 == "MVL") {
-    volume = -81 + parseInt(cmd.substr(3), 16);
+    volume = -82 + parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
     input = cmd.substr(3);
   } else {
@@ -172,10 +172,10 @@ function evalQuery(query) {
   } else if ("volume" in query) {
     var vol = query["volume"];
     var newVolume = parseInt(vol);
-    if (isNaN(newVolume) || (newVolume < -81) || (newVolume > -25)) {
+    if (isNaN(newVolume) || (newVolume <= -82) || (newVolume > -25)) {
       return "invalid volume setting: " + vol;
     } else {
-      newVolume += 81;
+      newVolume += 82;
       var hexVol = newVolume.toString(16).toUpperCase();
       if (hexVol.length < 2) {
         hexVol = "0" + hexVol;
@@ -244,7 +244,7 @@ var index_html = function(){/*
 <style type="text/css">
 body {
   font-family:sans-serif;
-  font-size:400%;
+  font-size:250%;
   color:white;
   padding:0;
   margin:0;
