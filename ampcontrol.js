@@ -3,6 +3,21 @@
 var http = require("http");
 var url = require("url");
 var net = require("net");
+var process = require("process");
+var amplifier;
+var port;
+
+if (process.argv.length >= 3) {
+  amplifier = process.argv[2];
+} else {
+  amplifier = "onkyo";
+}
+
+if (process.argv.length >= 4) {
+  port = parseInt(process.argv[3]);
+} else {
+  port = 60128;
+}
 
 var conn;
 var connected = false;
@@ -132,7 +147,7 @@ function send(data) {
 }
 
 function connect() {
-  conn = net.createConnection(60128, "onkyo");
+  conn = net.createConnection(port, amplifier);
   conn.setKeepAlive(true);
   conn.setNoDelay(true);
   conn.on("connect", function() {
@@ -212,9 +227,7 @@ var server = http.createServer(function(request, response) {
 
   if (request.method != "GET") {
     sendResponse(request, response, 400, "text/plain", "http method not supported");
-  } else if (path.pathname == "/") {
-    sendResponse(request, response, 200, "text/html", index_html);
-  } else if (path.pathname == "/getstatus") {
+  } else if (path.pathname.endsWith("/getstatus")) {
     sendResponse(request, response, 200, "application/json", JSON.stringify({
       "connected" : connected,
       "power"     : power,
@@ -222,18 +235,20 @@ var server = http.createServer(function(request, response) {
       "volume"    : volume,
       "input"     : input
     }));
-  } else if (path.pathname == "/getinputs") {
+  } else if (path.pathname.endsWith("/getinputs")) {
     sendResponse(request, response, 200, "application/json", JSON.stringify(inputs));
-  } else if (path.pathname == "/set") {
+  } else if (path.pathname.endsWith("/set")) {
     var error = evalQuery(path.query);
     sendResponse(request, response, (error ? 400 : 200), "text/plain", (error ? error : "ok"));
-  } else if (path.pathname == "/reconnect") {
+  } else if (path.pathname.endsWith("/reconnect")) {
     if (!connected) {
       connect();
     }
     sendResponse(request, response, 200, "text/plain", "ok");
-  } else if (path.pathname == "/favicon.ico") {
+  } else if (path.pathname.endsWith("/favicon.ico")) {
     sendResponse(request, response, 404, "image/x-icon", "");
+  } else if (path.pathname.endsWith("/")) {
+    sendResponse(request, response, 200, "text/html", index_html);
   } else {
     sendResponse(request, response, 404, "text/plain", "file not found");
   }
