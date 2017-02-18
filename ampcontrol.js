@@ -9,8 +9,8 @@ var connected = false;
 var clearToSend = false;
 var queue = [];
 
-var powered = false;
-var muted = false;
+var power = false;
+var mute = false;
 var volume = 0;
 var input = "";
 var inputs = {
@@ -68,13 +68,13 @@ function recv(data) {
   var cmd3 = (cmdlen > 3 ? cmd.substr(0, 3) : "");
 
   if (cmd == "PWR00") {
-    powered = false;
+    power = false;
   } else if (cmd == "PWR01") {
-    powered = true;
+    power = true;
   } else if (cmd == "AMT00") {
-    muted = false;
+    mute = false;
   } else if (cmd == "AMT01") {
-    muted = true;
+    mute = true;
   } else if (cmd3 == "MVL") {
     volume = -82 + parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
@@ -83,7 +83,7 @@ function recv(data) {
     console.log("unknown cmd=%s", cmd);
   }
 
-//  console.log("powered=%s muted=%s volume=%d input=%s", powered.toString(), muted.toString(), volume, input);
+//  console.log("power=%s mute=%s volume=%d input=%s", power.toString(), mute.toString(), volume, input);
 }
 
 function trySend() {
@@ -217,8 +217,8 @@ var server = http.createServer(function(request, response) {
   } else if (path.pathname == "/getstatus") {
     sendResponse(request, response, 200, "application/json", JSON.stringify({
       "connected" : connected,
-      "powered"   : powered,
-      "muted"     : muted,
+      "power"     : power,
+      "mute"      : mute,
       "volume"    : volume,
       "input"     : input
     }));
@@ -397,13 +397,13 @@ function processStatus (response) {
       power = "disabled";
       state = "disabled";
       opacity = "0.0";
-    } else if (!data["powered"]) {
+    } else if (!data["power"]) {
       reconnect = "hidden";
       led = "red";
       power = "";
       state = "disabled";
       opacity = "0.0";
-    } else if (data["muted"]) {
+    } else if (data["mute"]) {
       reconnect = "hidden";
       led = "white";
       power = "";
