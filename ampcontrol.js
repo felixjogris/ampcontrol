@@ -76,14 +76,14 @@ function recv(data) {
   } else if (cmd == "AMT01") {
     muted = true;
   } else if (cmd3 == "MVL") {
-    volume = parseInt(cmd.substr(3), 16);
+    volume = -81 + parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
     input = cmd.substr(3);
   } else {
     console.log("unknown cmd=%s", cmd);
   }
 
-  console.log("powered=%s muted=%s volume=%d input=%s", powered.toString(), muted.toString(), volume, input);
+//  console.log("powered=%s muted=%s volume=%d input=%s", powered.toString(), muted.toString(), volume, input);
 }
 
 function trySend() {
@@ -122,7 +122,7 @@ function trySend() {
     data[data.length - 1] = '\r'.charCodeAt(0);
 
     conn.write(data);
-    console.log("send %d bytes, cmd=%s", data.length, cmd);
+//    console.log("send %d bytes, cmd=%s", data.length, cmd);
   }
 }
 
@@ -172,9 +172,10 @@ function evalQuery(query) {
   } else if ("volume" in query) {
     var vol = query["volume"];
     var newVolume = parseInt(vol);
-    if (isNaN(newVolume)) {
+    if (isNaN(newVolume) || (newVolume < -81) || (newVolume > -25)) {
       return "invalid volume setting: " + vol;
     } else {
+      newVolume += 81;
       var hexVol = newVolume.toString(16).toUpperCase();
       if (hexVol.length < 2) {
         hexVol = "0" + hexVol;
@@ -304,10 +305,10 @@ input, select, option {
 <div id="ampcontrol">
 <div id="led">&bull;</div>
 <div class="row">
-<input id="power" type="button" value="Power" onClick="toggle('powered');">
+<input id="power" type="button" value="Power" onClick="toggle('power');">
 </div>
 <div class="row">
-<input id="mute" type="button" value="Mute" onClick="toggle('muted');">
+<input id="mute" type="button" value="Mute" onClick="toggle('mute');">
 </div>
 <div id="volume">-43dB</div>
 <div class="row">
@@ -406,7 +407,7 @@ function processStatus (response) {
     document.getElementById("volplus").disabled = state;
     document.getElementById("inputs").disabled = state;
 
-    document.getElementById("volume").text = data["volume"];
+    document.getElementById("volume").innerHTML = data["volume"] + "dB";
     document.getElementById("inputs").value = data["input"];
   } catch (e) {
     toggleErrorPane("visible");
