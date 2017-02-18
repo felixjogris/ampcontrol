@@ -245,9 +245,12 @@ var index_html = function(){/*
 <html>
 <head>
 <title>ampcontrol</title>
+<meta name="viewport" content="width=device-width">
 <style type="text/css">
 body {
   font-family:sans-serif;
+  font-size:400%;
+  color:white;
   padding:0;
   margin:0;
   background-color:black;
@@ -265,7 +268,7 @@ body {
   margin:0;
   z-index:998;
 }
-#errorText {
+#errorText, #reconnect {
   width:100%;
   position:absolute;
   top:50%;
@@ -282,31 +285,52 @@ body {
   margin:0;
   z-index:999;
 }
-#heartbeat {
-  position:fixed;
-  bottom:0;
-  right:0;
-  font-weight:bold;
-  margin:0;
-  color:red;
+input, select, option {
+  font-family:sans-serif;
+  font-size:100%;
+}
+#ampcontrol {
+  width:300px;
+  height:800px;
+}
+.row, #mute, #power, #inputs, #volume, #led {
+  width:100%;
+  text-align:center;
+}
+#volume {
+  color:darkcyan;
+  font-size:150%;
+}
+#volminus, #volplus {
+  width:50%;
 }
 </style>
 </head>
 <body>
-
 <div id="ampcontrol">
+<div id="led">&bull;</div>
+<div class="row">
+<input id="power" type="button" value="Power">
+</div>
+<div class="row">
+<input id="mute" type="button" value="Mute">
+</div>
+<div id="volume">-43dB</div>
+<div class="row">
+<input id="volminus" type="button" value="&darr;"><input id="volplus" type="button" value="&uarr;">
+</div
+><div class="row">
 <select id="inputs"></select>
-<input id="volume" type="range" min="0" max="255">
-<input id="muted" type="checkbox">
-<input id="power" type="button">
+</div>
 </div>
 
 <div id="errorPane"></div>
 <div id="errorText">Connection lost!</div>
-<div id="heartbeat">&hearts;</div>
+<div id="reconnect">Amplifier down! <input type="button" value="Reconnect"></div>
 
 <script type="text/javascript">
 <!--
+
 function getInputs () {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.timeout = 10000;
@@ -327,9 +351,48 @@ function getInputs () {
   xmlHttp.send()
 }
 
-function processData (response) {
+function processStatus (response) {
   try {
     var data = JSON.parse(response);
+    var reconnect, led, power, state, opacity;
+
+    if (!data["connected"]) {
+      reconnect = "visible";
+      led = "white";
+      power = "disabled";
+      state = "disabled";
+      opacity = "0.0";
+    } else if (!data["powered"]) {
+      reconnect = "hidden";
+      led = "red";
+      power = "";
+      state = "disabled";
+      opacity = "0.0";
+    } else if (data["muted"]) {
+      reconnect = "hidden";
+      led = "white";
+      power = "";
+      state = "";
+      opacity = "0.5";
+    } else {
+      reconnect = "hidden";
+      led = "white";
+      power = "";
+      state = "";
+      opacity = "1.0";
+    }
+    
+    document.getElementById("reconnect").style.visibility = reconnect;
+    document.getElementById("led").style.color = led;
+    document.getElementById("power").disabled = power;
+    document.getElementById("mute").disabled = state;
+    document.getElementById("volminus").disabled = state;
+    document.getElementById("volume").style.opacity = opacity;
+    document.getElementById("volplus").disabled = state;
+    document.getElementById("inputs").disabled = state;
+
+    document.getElementById("volume").text = data["volume"];
+    document.getElementById("inputs").value = data["input"];
   } catch (e) {
     toggleErrorPane("visible");
   }
@@ -344,21 +407,14 @@ function toggleErrorPane (visibility) {
   }
 }
 
-function toggleHeartBeat () {
-  var heartbeat = document.getElementById("heartbeat");
-  heartbeat.style.visibility = (heartbeat.style.visibility == "hidden" ? "visible" : "hidden");
-}
-
 function startRequest () {
-  toggleHeartBeat();
-
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.timeout = 10000;
   xmlHttp.onreadystatechange = function () {
     if (xmlHttp.readyState == 4) {
       if (xmlHttp.status == 200) {
         toggleErrorPane("hidden");
-        processData(xmlHttp.response);
+        processStatus(xmlHttp.response);
       } else {
         toggleErrorPane("visible");
       }
@@ -371,6 +427,7 @@ function startRequest () {
 
 getInputs();
 startRequest();
+
 -->
 </script>
 </body>
