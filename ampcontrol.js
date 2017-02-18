@@ -227,6 +227,9 @@ var server = http.createServer(function(request, response) {
   } else if (path.pathname == "/set") {
     var error = evalQuery(path.query);
     sendResponse(request, response, (error ? 400 : 200), "text/plain", (error ? error : "ok"));
+  } else if (path.pathname == "/reconnect") {
+    connect();
+    sendResponse(request, response, 200, "text/plain", "ok");
   } else if (path.pathname == "/favicon.ico") {
     sendResponse(request, response, 404, "image/x-icon", "");
   } else {
@@ -330,11 +333,18 @@ input, select, option {
 
 <div id="errorPane"></div>
 <div id="errorText">Connection lost!</div>
-<div id="reconnect">Amplifier down! <input type="button" value="Reconnect"></div>
+<div id="reconnect">Amplifier down! <input type="button" value="Reconnect" onClick="reconnect();"></div>
 
 <script type="text/javascript">
 <!--
 var data = {};
+
+function reconnect () {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.timeout = 10000;
+  xmlHttp.open("GET", "/reconnect"");
+  xmlHttp.send()
+}
 
 function setAny (what, level) {
   var xmlHttp = new XMLHttpRequest();
