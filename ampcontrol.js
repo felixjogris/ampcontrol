@@ -288,7 +288,7 @@ input, select, option {
   width:300px;
   height:800px;
 }
-.row, #mute, #power, #inputs, #volume, #led {
+.row, #mute, #power, #inputs, #volume, #led, #about {
   width:100%;
   text-align:center;
 }
@@ -298,6 +298,10 @@ input, select, option {
 }
 #volminus, #volplus {
   width:50%;
+}
+#about {
+  margin-top:10%;
+  font-size:50%;
 }
 </style>
 </head>
@@ -313,10 +317,9 @@ input, select, option {
 <div id="volume">-43dB</div>
 <div class="row">
 <input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);"><input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);">
-</div
-><div class="row">
+</div><div class="row">
 <select id="inputs" onClick="setInput();"></select>
-</div>
+</div><div id="about"><a href="http://ogris.de/ampcontrol/">ampcontrol</a></div>
 </div>
 
 <div id="errorPane"></div>
