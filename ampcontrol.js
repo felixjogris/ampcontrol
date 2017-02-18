@@ -158,22 +158,16 @@ function evalQuery(query) {
   }
 
   if ("power" in query) {
-    var pwr = query["power"];
-    if (pwr == "on") {
+    if (query["power"]) {
       send("PWR01");
-    } else if (pwr == "off") {
+    } else  {
       send("PWR00");
-    } else {
-      return "invalid power setting: " + pwr;
     }
   } else if ("mute" in query) {
-    var mte = query["mute"];
-    if (mte == "on") {
+    if (query["mute"]) {
       send("AMT01");
-    } else if (mte == "off") {
-      send("AMT00");
     } else {
-      return "invalid mute setting: " + mte;
+      send("AMT00");
     }
   } else if ("volume" in query) {
     var vol = query["volume"];
@@ -310,17 +304,17 @@ input, select, option {
 <div id="ampcontrol">
 <div id="led">&bull;</div>
 <div class="row">
-<input id="power" type="button" value="Power">
+<input id="power" type="button" value="Power" onClick="toggle('powered');">
 </div>
 <div class="row">
-<input id="mute" type="button" value="Mute">
+<input id="mute" type="button" value="Mute" onClick="toggle('muted');">
 </div>
 <div id="volume">-43dB</div>
 <div class="row">
-<input id="volminus" type="button" value="&darr;"><input id="volplus" type="button" value="&uarr;">
+<input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);"><input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);">
 </div
 ><div class="row">
-<select id="inputs"></select>
+<select id="inputs" onClick="setInput();"></select>
 </div>
 </div>
 
@@ -330,6 +324,27 @@ input, select, option {
 
 <script type="text/javascript">
 <!--
+var data = {};
+
+function setAny (what, level) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.timeout = 10000;
+  xmlHttp.open("GET", "/set?" + what + "=" + level);
+  xmlHttp.send()
+}
+
+function toggle (what) {
+  setAny(what, !data[what]);
+}
+
+function setVolume (incr) {
+  var newVolume = parseInt(data["volume"]) + incr;
+  setAny("volume", newVolume.toString());
+}
+
+function setInput () {
+  setAny("input", document.getElementById("inputs").value);
+}
 
 function getInputs () {
   var xmlHttp = new XMLHttpRequest();
@@ -348,12 +363,12 @@ function getInputs () {
     }
   };
   xmlHttp.open("GET", "/getinputs");
-  xmlHttp.send()
+  xmlHttp.send();
 }
 
 function processStatus (response) {
   try {
-    var data = JSON.parse(response);
+    data = JSON.parse(response);
     var reconnect, led, power, state, opacity;
 
     if (!data["connected"]) {
