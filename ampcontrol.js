@@ -342,15 +342,15 @@ var data = {};
 function reconnect () {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.timeout = 10000;
-  xmlHttp.open("GET", "/reconnect"");
-  xmlHttp.send()
+  xmlHttp.open("GET", "/reconnect");
+  xmlHttp.send();
 }
 
 function setAny (what, level) {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.timeout = 10000;
   xmlHttp.open("GET", "/set?" + what + "=" + level);
-  xmlHttp.send()
+  xmlHttp.send();
 }
 
 function toggle (what) {
