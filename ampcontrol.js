@@ -362,15 +362,15 @@ var data = {};
 
 function reconnect () {
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.timeout = 10000;
   xmlHttp.open("GET", "/reconnect");
+  xmlHttp.timeout = 10000;
   xmlHttp.send();
 }
 
 function setAny (what, level) {
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.timeout = 10000;
   xmlHttp.open("GET", "/set?" + what + "=" + level);
+  xmlHttp.timeout = 10000;
   xmlHttp.send();
 }
 
@@ -389,7 +389,6 @@ function setInput () {
 
 function getInputs () {
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.timeout = 10000;
   xmlHttp.onreadystatechange = function () {
     if ((xmlHttp.readyState == 4) && (xmlHttp.status == 200)) {
       try {
@@ -404,6 +403,7 @@ function getInputs () {
     }
   };
   xmlHttp.open("GET", "/getinputs");
+  xmlHttp.timeout = 10000;
   xmlHttp.send();
 }
 
@@ -465,7 +465,6 @@ function toggleErrorPane (visibility) {
 
 function startRequest () {
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.timeout = 10000;
   xmlHttp.onreadystatechange = function () {
     if (xmlHttp.readyState == 4) {
       if (xmlHttp.status == 200) {
@@ -478,6 +477,7 @@ function startRequest () {
     }
   };
   xmlHttp.open("GET", "/getstatus");
+  xmlHttp.timeout = 10000;
   xmlHttp.send();
 }
 
