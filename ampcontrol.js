@@ -303,6 +303,7 @@ body {
 input, select, option {
   font-family:sans-serif;
   font-size:100%;
+  -webkit-appearance:button;
 }
 #ampcontrol {
   width:300px;
