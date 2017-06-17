@@ -304,6 +304,8 @@ input, select, option {
   font-family:sans-serif;
   font-size:100%;
   -webkit-appearance:button;
+  -moz-appearance:button;
+  text-align-last:center;
 }
 #ampcontrol {
   width:300px;
