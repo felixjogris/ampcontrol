@@ -322,7 +322,7 @@ input, select, option {
 #volume {
   font-size:150%;
 }
-#volminus, #volplus {
+#volminus, #volplus, #volminus5, #volplus5 {
   width:50%;
 }
 #about {
@@ -342,7 +342,12 @@ input, select, option {
 </div>
 <div id="volume"></div>
 <div class="row">
-<input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);"><input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);">
+<input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);" title="-1dB">
+<input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);" title="+1dB">
+</div>
+<div class="row">
+<input id="volminus5" type="button" value="&darr;&darr;" onClick="setVolume(-5);" title="-5dB">
+<input id="volplus5" type="button" value="&uarr;&uarr;" onClick="setVolume(5);" title="+5dB">
 </div>
 <div class="row">
 <select id="inputs" onClick="setInput();"></select>
@@ -443,8 +448,10 @@ function processStatus (response) {
     document.getElementById("power").disabled = power;
     document.getElementById("mute").disabled = state;
     document.getElementById("volminus").disabled = state;
+    document.getElementById("volminus5").disabled = state;
     document.getElementById("volume").style.opacity = opacity;
     document.getElementById("volplus").disabled = state;
+    document.getElementById("volplus5").disabled = state;
     document.getElementById("inputs").disabled = state;
 
     document.getElementById("volume").innerHTML = data["volume"] + "dB";
