@@ -367,7 +367,8 @@ var data = {};
 
 function toggleVolumeSelect () {
   var volselect = document.getElementById("volselect");
-  is_visible = (volselect.style.visibility == "visible");
+  var is_visible = (volselect.style.visibility == "visible");
+  var current_volume = ("volume" in data ? data["volume"] : -50);
 
   if (is_visible) {
     var selected_volume = volselect.options[volselect.selectedIndex].value;
@@ -396,8 +397,6 @@ function toggleVolumeSelect () {
   document.getElementById("volplus").style.display = (is_visible ? "" : "none");
   volselect.style.visibility = (is_visible ? "hidden" : "visible");
   volselect.style.display = (is_visible ? "none" : "inline");
-
-  var current_volume = ("volume" in data ? data["volume"] : -50);
 
   if (!is_visible) {
     volselect.focus();
