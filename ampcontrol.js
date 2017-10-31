@@ -312,9 +312,10 @@ input, select, option {
   height:800px;
   margin:0 auto 0 auto;
 }
-.row, #mute, #power, #inputs, #volume, #led, #about {
+.row, #mute, #power, #inputs, #volume, #led, #about, #volselect {
   width:100%;
   text-align:center;
+  white-space:nowrap;
 }
 #volume, a {
   color:darkcyan;
@@ -322,12 +323,16 @@ input, select, option {
 #volume {
   font-size:150%;
 }
-#volminus, #volplus, #volminus5, #volplus5 {
+#volminus, #volplus {
   width:50%;
 }
 #about {
   margin-top:10%;
   font-size:50%;
+}
+#volselect {
+  visibility:hidden;
+  display:none;
 }
 </style>
 </head>
@@ -340,14 +345,9 @@ input, select, option {
 <div class="row">
 <input id="mute" type="button" value="Mute" onClick="toggle('mute');">
 </div>
-<div id="volume"></div>
+<div id="volume" onClick="toggleVolumeSelect();"></div>
 <div class="row">
-<input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);" title="-1dB">
-<input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);" title="+1dB">
-</div>
-<div class="row">
-<input id="volminus5" type="button" value="&darr;&darr;" onClick="setVolume(-5);" title="-5dB">
-<input id="volplus5" type="button" value="&uarr;&uarr;" onClick="setVolume(5);" title="+5dB">
+<input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);" title="-1dB"><input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);" title="+1dB"><select id="volselect" onChange="toggleVolumeSelect();" onBlur="toggleVolumeSelect();"></select>
 </div>
 <div class="row">
 <select id="inputs" onClick="setInput();"></select>
@@ -364,6 +364,45 @@ input, select, option {
 <script type="text/javascript">
 <!--
 var data = {};
+
+function toggleVolumeSelect () {
+  var volselect = document.getElementById("volselect");
+  is_visible = (volselect.style.visibility == "visible");
+
+  if (is_visible) {
+    var selected_volume = volselect.options[volselect.selectedIndex].value;
+    if (selected_volume != current_volume) {
+      setAny("volume", selected_volume.toString());
+    }
+    volselect.blur();
+  } else {
+    volselect.innerText = null;
+    var i = current_volume;
+    while (i < -25) i += 5;
+    while (i >= current_volume) {
+      volselect.add(new Option(i + "dB", i));
+      i -= 5;
+    }
+    volselect.selectedIndex = volselect.length - 1;
+    while (i > -82) {
+      volselect.add(new Option(i + "dB", i));
+      i -= 5;
+    }
+  }
+
+  document.getElementById("volminus").style.visibility = (is_visible ? "visible" : "hidden");
+  document.getElementById("volminus").style.display = (is_visible ? "" : "none");
+  document.getElementById("volplus").style.visibility = (is_visible ? "visible" : "hidden");
+  document.getElementById("volplus").style.display = (is_visible ? "" : "none");
+  volselect.style.visibility = (is_visible ? "hidden" : "visible");
+  volselect.style.display = (is_visible ? "none" : "inline");
+
+  var current_volume = ("volume" in data ? data["volume"] : -50);
+
+  if (!is_visible) {
+    volselect.focus();
+  }
+}
 
 function reconnect () {
   var xmlHttp = new XMLHttpRequest();
@@ -448,10 +487,8 @@ function processStatus (response) {
     document.getElementById("power").disabled = power;
     document.getElementById("mute").disabled = state;
     document.getElementById("volminus").disabled = state;
-    document.getElementById("volminus5").disabled = state;
     document.getElementById("volume").style.opacity = opacity;
     document.getElementById("volplus").disabled = state;
-    document.getElementById("volplus5").disabled = state;
     document.getElementById("inputs").disabled = state;
 
     document.getElementById("volume").innerHTML = data["volume"] + "dB";
