@@ -350,7 +350,7 @@ input, select, option {
 <input id="volminus" type="button" value="&darr;" onClick="setVolume(-1);" title="-1dB"><input id="volplus" type="button" value="&uarr;" onClick="setVolume(1);" title="+1dB"><select id="volselect" onChange="toggleVolumeSelect();" onBlur="toggleVolumeSelect();"></select>
 </div>
 <div class="row">
-<select id="inputs" onClick="setInput();"></select>
+<select id="inputs" onChange="setInput();"></select>
 </div>
 <div id="about">
 <a href="http://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
@@ -371,7 +371,7 @@ function toggleVolumeSelect () {
   var current_volume = ("volume" in data ? data["volume"] : -50);
 
   if (is_visible) {
-    var selected_volume = volselect.options[volselect.selectedIndex].value;
+    var selected_volume = volselect.value;
     if (selected_volume != current_volume) {
       setAny("volume", selected_volume.toString());
     }
