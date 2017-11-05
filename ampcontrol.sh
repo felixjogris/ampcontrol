@@ -42,12 +42,14 @@ ampcontrol_start()
 	id "${ampcontrol_uid}" >/dev/null 2>&1 || \
 		die "No such user: ${ampcontrol_uid}"
 
-	opts="\"${ampcontrol_host}\" \"${ampcontrol_port}\""
-	[ "${ampcontrol_quiet}" = "yes" ] && opts="-q ${opts}"
+	opts=""
+	[ "${ampcontrol_quiet}" = "yes" ] && opts="${opts} -q"
+	opts="${opts% }"
 
 	"${command}" -f -P "${pidfile}" -t "${name}" -S -T "${name}" -r \
 		-u "${ampcontrol_uid}" "${ampcontrol_nodejs}" \
-		"${ampcontrol_script}" ${opts}
+		"${ampcontrol_script}" ${opts} \
+		"${ampcontrol_host}" "${ampcontrol_port}"
 }
 
 run_rc_command "$1"
