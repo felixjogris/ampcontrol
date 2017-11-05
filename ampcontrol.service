@@ -8,5 +8,5 @@ Conflicts=shutdown.target
 WantedBy=multi-user.target
 
 [Service]
-ExecStart=/usr/local/bin/ampcontrol.js
+ExecStart=/usr/bin/node /usr/local/bin/ampcontrol.js -q onkyo 60128
 Restart=always
