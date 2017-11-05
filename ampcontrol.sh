@@ -23,18 +23,31 @@ load_rc_config "$name"
 : ${ampcontrol_script:="/usr/local/bin/ampcontrol.js"}
 : ${ampcontrol_host:="onkyo"}
 : ${ampcontrol_port:="60128"}
+: ${ampcontrol_quiet:="yes"}
+
+die()
+{
+	echo "$1" >&2
+	exit 1
+}
 
 ampcontrol_start()
 {
 	check_startmsgs && echo "Starting ${name}."
 
-	[ -x "${ampcontrol_nodejs}" ] || { echo "Node.js binary ${ampcontrol_nodejs} not executable" >&2; exit 1; }
-	[ -r "${ampcontrol_script}" ] || { echo "ampcontrol script ${ampcontrol_script} not readable" >&2; exit 1; }
-	id "${ampcontrol_uid}" >/dev/null 2>&1 || { echo "No such user: ${ampcontrol_uid}" >&2; exit 1; }
+	[ -x "${ampcontrol_nodejs}" ] || \
+		die "Node.js binary ${ampcontrol_nodejs} not executable"
+	[ -r "${ampcontrol_script}" ] || \
+		die "ampcontrol script ${ampcontrol_script} not readable"
+	id "${ampcontrol_uid}" >/dev/null 2>&1 || \
+		die "No such user: ${ampcontrol_uid}"
+
+	opts="\"${ampcontrol_host}\" \"${ampcontrol_port}\""
+	[ "${ampcontrol_quiet}" = "yes" ] && opts="-q ${opts}"
 
 	"${command}" -f -P "${pidfile}" -t "${name}" -S -T "${name}" -r \
 		-u "${ampcontrol_uid}" "${ampcontrol_nodejs}" \
-		"${ampcontrol_script}" "${ampcontrol_host}" "${ampcontrol_port}"
+		"${ampcontrol_script}" ${opts}
 }
 
 run_rc_command "$1"
