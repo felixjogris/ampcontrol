@@ -4,20 +4,10 @@ var http = require("http");
 var url = require("url");
 var net = require("net");
 var process = require("process");
-var amplifier;
-var port;
 
-if (process.argv.length >= 3) {
-  amplifier = process.argv[2];
-} else {
-  amplifier = "onkyo";
-}
-
-if (process.argv.length >= 4) {
-  port = parseInt(process.argv[3]);
-} else {
-  port = 60128;
-}
+var quiet = false;
+var amplifier = "onkyo";
+var port = 60128;
 
 var conn;
 var connected = false;
@@ -49,10 +39,12 @@ function sendResponse(request, response, httpcode, contenttype, body) {
       "Content-Length" : body.length
     });
     response.end(body, function() {
-      console.log("%s %s %d %d %s %s",
-                  new Date().toISOString(),
-                  request.socket.remoteAddress, httpcode,
-                  body.length, request.method, request.url);
+      if (!quiet) {
+        console.log("%s %s %d %d %s %s",
+                    new Date().toISOString(),
+                    request.socket.remoteAddress, httpcode,
+                    body.length, request.method, request.url);
+      }
     });
   });
 }
@@ -137,7 +129,9 @@ function trySend() {
     data[data.length - 1] = '\r'.charCodeAt(0);
 
     conn.write(data);
-    console.log("send %d bytes, cmd=%s", data.length, cmd);
+    if (!quiet) {
+      console.log("send %d bytes, cmd=%s", data.length, cmd);
+    }
   }
 }
 
@@ -211,6 +205,26 @@ function evalQuery(query) {
   return "";
 }
 
+function parseCmdLine() {
+  var argpos = 2;
+
+  if ((process.argv.length > argpos) && (process.argv[argpos] == "-q")) {
+    quiet = true;
+    argpos++;
+  }
+
+  if (process.argv.length > argpos) {
+    amplifier = process.argv[argpos];
+    argpos++;
+  }
+
+  if (process.argv.length > argpos) {
+    port = parseInt(process.argv[argpos]);
+    argpos++;
+  }
+}
+
+parseCmdLine();
 connect();
 
 var server = http.createServer(function(request, response) {
