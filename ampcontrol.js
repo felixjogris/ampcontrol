@@ -367,7 +367,7 @@ input, select, option {
 <select id="inputs" onChange="setInput();"></select>
 </div>
 <div id="about">
-<a href="http://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
+<a href="https://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
 </div>
 </div>
 

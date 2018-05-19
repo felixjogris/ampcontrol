@@ -1,6 +1,6 @@
 ampcontrol
 ==========
 
-ampcontrol is a Node.js application to control an Onkyo receiver or amplifier. See http://ogris.de/ampcontrol/
+ampcontrol is a Node.js application to control an Onkyo receiver or amplifier. See https://ogris.de/ampcontrol/
 
-![ScreenShot](http://ogris.de/ampcontrol/ampcontrol.png)
+![ScreenShot](https://ogris.de/ampcontrol/ampcontrol.png)

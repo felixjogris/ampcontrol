@@ -1,6 +1,6 @@
 [Unit]
 Description=Webfrontend for an A/V receiver
-Documentation=http://ogris.de/ampcontrol/
+Documentation=https://ogris.de/ampcontrol/
 Requires=local-fs.target
 Conflicts=shutdown.target
 
