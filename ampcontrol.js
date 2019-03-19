@@ -198,6 +198,12 @@ function evalQuery(query) {
     } else {
       return "invalid input setting: " + newInput;
     }
+  } else if ("play" in query) {
+    send("NTCPLAY");
+  } else if ("stop" in query) {
+    send("NTCSTOP");
+  } else if ("return" in query) {
+    send("NTCRETURN");
   } else {
     return "unknown setting";
   }
@@ -348,6 +354,9 @@ input, select, option {
   visibility:hidden;
   display:none;
 }
+#play, #stop, #return {
+  width:33.3%;
+}
 </style>
 </head>
 <body>
@@ -365,6 +374,9 @@ input, select, option {
 </div>
 <div class="row">
 <select id="inputs" onChange="setInput();"></select>
+</div>
+<div class="row">
+<input id="play" type="button" value="&#9654;" onClick="send('play');"><input id="stop" type="button" value="&#9632;" onClick="send('stop');"><input id="return" type="button" value="&#2B0F;" onClick="send('return');">
 </div>
 <div id="about">
 <a href="https://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
@@ -433,6 +445,10 @@ function setAny (what, level) {
 
 function toggle (what) {
   setAny(what, !data[what]);
+}
+
+function send (what) {
+  setAny(what, "");
 }
 
 function setVolume (incr) {
