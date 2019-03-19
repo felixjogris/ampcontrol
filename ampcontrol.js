@@ -203,10 +203,6 @@ function evalQuery(query) {
     send("NTCPLAY");
   } else if ("stop" in query) {
     send("NTCSTOP");
-  } else if ("trackup" in query) {
-    send("NTCTRUP");
-  } else if ("trackdown" in query) {
-    send("NTCTRDN");
   } else if ("select" in query) {
     send("NTCSELECT");
   } else if ("return" in query) {
@@ -411,13 +407,10 @@ input, select, option {
 <input class="netbtn" type="button" value="&#9654;" onClick="send('play');"><input class="netbtn" type="button" value="&#9209;" onClick="send('stop');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&#9198;" onClick="send('trackup');" title="Previous track"><input class="netbtn" type="button" value="&#9197;" onClick="send('trackdown');" title="Next track">
-</div>
-<div class="row">
 <input class="netbtn" type="button" value="&#10003;" onClick="send('select');" title="Select"><input class="netbtn" type="button" value="&uArr;" onClick="send('return');" title="Return">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&uarr;" onClick="send('up');" title="Previous station"><input class="netbtn" type="button" value="&darr;" onClick="send('down');" title="Next station">
+<input class="netbtn" type="button" value="&uarr;" onClick="send('up');" title="Station -1"><input class="netbtn" type="button" value="&darr;" onClick="send('down');" title="Station +1">
 </div>
 <div class="row">
 <input class="netbtn" type="button" value="&larr;" onClick="send('right');" title="Station -10"><input class="netbtn" type="button" value="&rarr;" onClick="send('left');" title="Station +10">
