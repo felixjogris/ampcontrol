@@ -410,7 +410,7 @@ input, select, option {
 <input class="netbtn" type="button" value="&#10003;" onClick="send('select');" title="Select"><input class="netbtn" type="button" value="&uArr;" onClick="send('return');" title="Return">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&uarr;" onClick="send('up');" title="Station -1"><input class="netbtn" type="button" value="&darr;" onClick="send('down');" title="Station +1">
+<input class="netbtn" type="button" value="&darr;" onClick="send('up');" title="Station -1"><input class="netbtn" type="button" value="&uarr;" onClick="send('down');" title="Station +1">
 </div>
 <div class="row">
 <input class="netbtn" type="button" value="&larr;" onClick="send('right');" title="Station -10"><input class="netbtn" type="button" value="&rarr;" onClick="send('left');" title="Station +10">
