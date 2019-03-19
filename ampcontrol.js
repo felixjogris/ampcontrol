@@ -86,6 +86,7 @@ function recv(data) {
     volume = -82 + parseInt(cmd.substr(3), 16);
   } else if (cmd3 == "SLI") {
     input = cmd.substr(3);
+  } else if (cmd == "NTC") {
   } else {
     console.log("unknown cmd=%s", cmd);
   }
@@ -202,8 +203,42 @@ function evalQuery(query) {
     send("NTCPLAY");
   } else if ("stop" in query) {
     send("NTCSTOP");
+  } else if ("trackup" in query) {
+    send("NTCTRUP");
+  } else if ("trackdown" in query) {
+    send("NTCTRDN");
+  } else if ("select" in query) {
+    send("NTCSELECT");
   } else if ("return" in query) {
     send("NTCRETURN");
+  } else if ("down" in query) {
+    send("NTCDOWN");
+  } else if ("up" in query) {
+    send("NTCUP");
+  } else if ("left" in query) {
+    send("NTCLEFT");
+  } else if ("right" in query) {
+    send("NTCRIGHT");
+  } else if ("1" in query) {
+    send("NTC1");
+  } else if ("2" in query) {
+    send("NTC2");
+  } else if ("3" in query) {
+    send("NTC3");
+  } else if ("4" in query) {
+    send("NTC4");
+  } else if ("5" in query) {
+    send("NTC5");
+  } else if ("6" in query) {
+    send("NTC6");
+  } else if ("7" in query) {
+    send("NTC7");
+  } else if ("8" in query) {
+    send("NTC8");
+  } else if ("9" in query) {
+    send("NTC9");
+  } else if ("0" in query) {
+    send("NTC0");
   } else {
     return "unknown setting";
   }
@@ -343,7 +378,7 @@ input, select, option {
 #volume {
   font-size:150%;
 }
-#volminus, #volplus {
+.netbtn, #volminus, #volplus {
   width:50%;
 }
 #about {
@@ -353,9 +388,6 @@ input, select, option {
 #volselect {
   visibility:hidden;
   display:none;
-}
-#play, #stop, #return {
-  width:33.3%;
 }
 </style>
 </head>
@@ -376,7 +408,34 @@ input, select, option {
 <select id="inputs" onChange="setInput();"></select>
 </div>
 <div class="row">
-<input id="play" type="button" value="&#9654;" onClick="send('play');"><input id="stop" type="button" value="&#9632;" onClick="send('stop');"><input id="return" type="button" value="&#2B0F;" onClick="send('return');">
+<input class="netbtn" type="button" value="&#9654;" onClick="send('play');"><input class="netbtn" type="button" value="&#9209;" onClick="send('stop');">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="&#9198;" onClick="send('trackup');" title="Previous track"><input class="netbtn" type="button" value="&#9197;" onClick="send('trackdown');" title="Next track">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="&#10003;" onClick="send('select');" title="Select"><input class="netbtn" type="button" value="&uArr;" onClick="send('return');" title="Return">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="&uarr;" onClick="send('up');" title="Previous station"><input class="netbtn" type="button" value="&darr;" onClick="send('down');" title="Next station">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="&larr;" onClick="send('right');" title="Station -10"><input class="netbtn" type="button" value="&rarr;" onClick="send('left');" title="Station +10">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="1" onClick="send('1');"><input class="netbtn" type="button" value="2" onClick="send('2');">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="3" onClick="send('3');"><input class="netbtn" type="button" value="4" onClick="send('4');">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="5" onClick="send('5');"><input class="netbtn" type="button" value="6" onClick="send('6');">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="7" onClick="send('7');"><input class="netbtn" type="button" value="8" onClick="send('8');">
+</div>
+<div class="row">
+<input class="netbtn" type="button" value="9" onClick="send('9');"><input class="netbtn" type="button" value="0" onClick="send('0');">
 </div>
 <div id="about">
 <a href="https://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
@@ -522,6 +581,17 @@ function processStatus (response) {
 
     document.getElementById("volume").innerHTML = data["volume"] + "dB";
     document.getElementById("inputs").value = data["input"];
+
+    if (data["input"] == "28") {
+      state = "";
+    } else {
+      state = "disabled";
+    }
+
+    var netbtns = document.getElementsByClassName("netbtn");
+    for (var i = 0; i < netbtns.length; i++) {
+      netbtns[i].disabled = state;
+    }
   } catch (e) {
     toggleErrorPane("visible");
   }
@@ -561,4 +631,4 @@ startRequest();
 </script>
 </body>
 </html>
-*/}.toString().slice(15, -4);
+*/}.toString().slice(14, -4);
