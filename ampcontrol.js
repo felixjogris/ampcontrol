@@ -575,15 +575,16 @@ function processStatus (response) {
     document.getElementById("volume").innerHTML = data["volume"] + "dB";
     document.getElementById("inputs").value = data["input"];
 
-    if (data["input"] == "28") {
-      state = "";
+    var netbtnState;
+    if ((state != "disabled") && (data["input"] == "28")) {
+      netbtnState = "";
     } else {
-      state = "disabled";
+      netbtnState = "disabled";
     }
 
     var netbtns = document.getElementsByClassName("netbtn");
     for (var i = 0; i < netbtns.length; i++) {
-      netbtns[i].disabled = state;
+      netbtns[i].disabled = netbtnState;
     }
   } catch (e) {
     toggleErrorPane("visible");
