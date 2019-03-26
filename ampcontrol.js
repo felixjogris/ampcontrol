@@ -157,11 +157,8 @@ function connect() {
   });
   conn.on("data", function(data) {
     recv(data);
-<<<<<<< HEAD
-=======
     clearToSend = true;
     trySend();
->>>>>>> parent of 40070c8... avoiding stall writes
   });
 };
 
