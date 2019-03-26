@@ -153,7 +153,6 @@ function connect() {
   });
   conn.on("data", function(data) {
     recv(data);
-    trySend();
   });
 };
 
