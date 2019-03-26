@@ -31,6 +31,26 @@ var inputs = {
   "22": "PHONO",
   "28": "NET/USB"
 };
+var netusbcmds = [
+  "play",
+  "stop",
+  "select",
+  "return",
+  "down",
+  "up",
+  "left",
+  "right",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0"
+];
 
 function sendResponse(request, response, httpcode, contenttype, body) {
   process.nextTick(function() {
@@ -129,7 +149,11 @@ function trySend() {
 
     data[data.length - 1] = '\r'.charCodeAt(0);
 
-    conn.write(data);
+    conn.write(data, function () {
+      if (cmd.startsWith("NTC")) {
+        trySend();
+      }
+    });
     if (!quiet) {
       console.log("send %d bytes, cmd=%s", data.length, cmd);
     }
@@ -199,42 +223,8 @@ function evalQuery(query) {
     } else {
       return "invalid input setting: " + newInput;
     }
-  } else if ("play" in query) {
-    send("NTCPLAY");
-  } else if ("stop" in query) {
-    send("NTCSTOP");
-  } else if ("select" in query) {
-    send("NTCSELECT");
-  } else if ("return" in query) {
-    send("NTCRETURN");
-  } else if ("down" in query) {
-    send("NTCDOWN");
-  } else if ("up" in query) {
-    send("NTCUP");
-  } else if ("left" in query) {
-    send("NTCLEFT");
-  } else if ("right" in query) {
-    send("NTCRIGHT");
-  } else if ("1" in query) {
-    send("NTC1");
-  } else if ("2" in query) {
-    send("NTC2");
-  } else if ("3" in query) {
-    send("NTC3");
-  } else if ("4" in query) {
-    send("NTC4");
-  } else if ("5" in query) {
-    send("NTC5");
-  } else if ("6" in query) {
-    send("NTC6");
-  } else if ("7" in query) {
-    send("NTC7");
-  } else if ("8" in query) {
-    send("NTC8");
-  } else if ("9" in query) {
-    send("NTC9");
-  } else if ("0" in query) {
-    send("NTC0");
+  } else if (("ntc" in query) && (query["ntc"] in netusbcmds)) {
+    send("NTC" + query["ntc"].toUpperCase();
   } else {
     return "unknown setting";
   }
@@ -404,31 +394,31 @@ input, select, option {
 <select id="inputs" onChange="setInput();"></select>
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&#9654;" onClick="send('play');"><input class="netbtn" type="button" value="&#9209;" onClick="send('stop');">
+<input class="netbtn" type="button" value="&#9654;" onClick="netusb('play');"><input class="netbtn" type="button" value="&#9209;" onClick="netusb('stop');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&#10003;" onClick="send('select');" title="Select"><input class="netbtn" type="button" value="&uArr;" onClick="send('return');" title="Return">
+<input class="netbtn" type="button" value="&#10003;" onClick="netusb('select');" title="Select"><input class="netbtn" type="button" value="&uArr;" onClick="netusb('return');" title="Return">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&darr;" onClick="send('up');" title="Station -1"><input class="netbtn" type="button" value="&uarr;" onClick="send('down');" title="Station +1">
+<input class="netbtn" type="button" value="&darr;" onClick="netusb('up');" title="Station -1"><input class="netbtn" type="button" value="&uarr;" onClick="netusb('down');" title="Station +1">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="&larr;" onClick="send('right');" title="Station -10"><input class="netbtn" type="button" value="&rarr;" onClick="send('left');" title="Station +10">
+<input class="netbtn" type="button" value="&larr;" onClick="netusb('right');" title="Station -10"><input class="netbtn" type="button" value="&rarr;" onClick="netusb('left');" title="Station +10">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="1" onClick="send('1');"><input class="netbtn" type="button" value="2" onClick="send('2');">
+<input class="netbtn" type="button" value="1" onClick="netusb('1');"><input class="netbtn" type="button" value="2" onClick="netusb('2');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="3" onClick="send('3');"><input class="netbtn" type="button" value="4" onClick="send('4');">
+<input class="netbtn" type="button" value="3" onClick="netusb('3');"><input class="netbtn" type="button" value="4" onClick="netusb('4');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="5" onClick="send('5');"><input class="netbtn" type="button" value="6" onClick="send('6');">
+<input class="netbtn" type="button" value="5" onClick="netusb('5');"><input class="netbtn" type="button" value="6" onClick="netusb('6');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="7" onClick="send('7');"><input class="netbtn" type="button" value="8" onClick="send('8');">
+<input class="netbtn" type="button" value="7" onClick="netusb('7');"><input class="netbtn" type="button" value="8" onClick="netusb('8');">
 </div>
 <div class="row">
-<input class="netbtn" type="button" value="9" onClick="send('9');"><input class="netbtn" type="button" value="0" onClick="send('0');">
+<input class="netbtn" type="button" value="9" onClick="netusb('9');"><input class="netbtn" type="button" value="0" onClick="netusb('0');">
 </div>
 <div id="about">
 <a href="https://ogris.de/ampcontrol/" target="_blank">ampcontrol</a>
@@ -499,8 +489,8 @@ function toggle (what) {
   setAny(what, !data[what]);
 }
 
-function send (what) {
-  setAny(what, "");
+function netusb (what) {
+  setAny("ntc", what);
 }
 
 function setVolume (incr) {
