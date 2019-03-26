@@ -151,9 +151,11 @@ function trySend() {
 
     conn.write(data, function () {
       if (cmd.startsWith("NTC")) {
+        clearToSend = true;
         trySend();
       }
     });
+
     if (!quiet) {
       console.log("send %d bytes, cmd=%s", data.length, cmd);
     }
@@ -223,7 +225,7 @@ function evalQuery(query) {
     } else {
       return "invalid input setting: " + newInput;
     }
-  } else if (("ntc" in query) && (query["ntc"] in netusbcmds)) {
+  } else if (("ntc" in query) && (netusbcmds.indexOf(query["ntc"]) >= 0)) {
     send("NTC" + query["ntc"].toUpperCase());
   } else {
     return "unknown setting";
@@ -432,6 +434,7 @@ input, select, option {
 <script type="text/javascript">
 <!--
 var data = {};
+var newVolume;
 
 function toggleVolumeSelect () {
   var volselect = document.getElementById("volselect");
@@ -494,7 +497,7 @@ function netusb (what) {
 }
 
 function setVolume (incr) {
-  var newVolume = parseInt(data["volume"]) + incr;
+  newVolume = newVolume + incr;
   setAny("volume", newVolume.toString());
 }
 
@@ -564,6 +567,8 @@ function processStatus (response) {
 
     document.getElementById("volume").innerHTML = data["volume"] + "dB";
     document.getElementById("inputs").value = data["input"];
+
+    newVolume = parseInt(data["volume"]);
 
     var netbtnState;
     if ((state != "disabled") && (data["input"] == "28")) {
