@@ -11,7 +11,6 @@ var port = 60128;
 
 var conn;
 var connected = false;
-var clearToSend = false;
 var queue = [];
 
 var power = false;
@@ -95,9 +94,7 @@ function recv(data) {
 }
 
 function trySend() {
-  if (connected && clearToSend && queue.length > 0) {
-    clearToSend = false;
-
+  if (connected && queue.length > 0) {
     var cmd = queue.shift();
     var cmdlen = 2 + cmd.length + 1;
     var data = new Buffer(16 + cmdlen);
@@ -129,7 +126,7 @@ function trySend() {
 
     data[data.length - 1] = '\r'.charCodeAt(0);
 
-    conn.write(data);
+    conn.write(data, trySend);
     if (!quiet) {
       console.log("send %d bytes, cmd=%s", data.length, cmd);
     }
@@ -147,7 +144,6 @@ function connect() {
   conn.setNoDelay(true);
   conn.on("connect", function() {
     connected = true;
-    clearToSend = true;
     queue = [ "PWRQSTN", "MVLQSTN", "AMTQSTN", "SLIQSTN" ];
     trySend();
   });
@@ -157,7 +153,6 @@ function connect() {
   });
   conn.on("data", function(data) {
     recv(data);
-    clearToSend = true;
     trySend();
   });
 };
