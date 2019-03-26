@@ -224,7 +224,7 @@ function evalQuery(query) {
       return "invalid input setting: " + newInput;
     }
   } else if (("ntc" in query) && (query["ntc"] in netusbcmds)) {
-    send("NTC" + query["ntc"].toUpperCase();
+    send("NTC" + query["ntc"].toUpperCase());
   } else {
     return "unknown setting";
   }
