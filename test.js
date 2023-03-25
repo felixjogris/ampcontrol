@@ -3,16 +3,20 @@
 var net = require("net");
 var process = require("process");
 var console = require("console");
+var readline = require("readline");
 
 conn = net.createConnection(60128, "onkyo");
 conn.setKeepAlive(true);
 conn.setNoDelay(true);
+conn.on("data", function(data) {
+  console.log("recv:" + data);
+});
 
 var cmd = "NTC" + process.argv[2];
 console.log("cmd:"+cmd);
 
 var cmdlen = 2 + cmd.length + 1;
-var data = new Buffer(16 + cmdlen);
+var data = new Buffer.alloc(16 + cmdlen);
 
 data[0] = 'I'.charCodeAt(0);
 data[1] = 'S'.charCodeAt(0);
@@ -43,4 +47,12 @@ data[data.length - 1] = '\r'.charCodeAt(0);
 
 conn.write(data);
 
-conn.end();
+rl = readline.createInterface({
+  input:  process.stdin,
+  output: process.stdout
+});
+rl.question("Press [Enter] to close connection...", enter => {
+  conn.end();
+  rl.close();
+  console.log("Bye");
+});
